@@ -11,19 +11,18 @@ Lua tools to pump data into redis storage
 
 [Directory structure](#dir_struct)
 
-[Usage](#usage)
-
 
 ## Requirements  <a name="req"></a>
 
 >**Redis**
 >[redis.io](https://redis.io)
 
-for using sql database(s) as data source
 >**LuaSQL**
 >[LuaSQL](https://keplerproject.github.io/luasql/)
-
 *for mysql just simple install linux package lua-sql-mysql*
+
+>**redis-lua**
+>[nrk/redis-lua](https://github.com/nrk/redis-lua)
  
 ## Directory structure <a name="dir_struct"></a>
 ~~~
@@ -55,24 +54,6 @@ lua-pump-redis
     ├── json.lua
     └── toredis.lua
 ~~~
-
-## Usage <a name="usage"></a>
-### using rest service
-1. *install openresty*
-2. *create your own workspace and install lua-datatree-redis*
-~~~
-   mkdir ~/work 
-   cd ~/work 
-   git clone https://github.com/hipBali/lua-datatree-redis.git
-   cd dtree-redis
-   cp src/* resty/api/core
-~~~
- 3. *run Nginx rest service*
-~~~
-   nginx -p `pwd`/ -c conf/nginx.conf
-~~~
-
-***simple curl request***
 
 ## License
 
