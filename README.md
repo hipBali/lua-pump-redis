@@ -19,31 +19,40 @@ Lua tools to pump data into redis storage
 >**Redis**
 >[redis.io](https://redis.io)
 
-for use as rest service
->**OpenResty**
->[openresty.org](https://openresty.org/)
+for using sql database(s) as data source
+>**LuaSQL**
+>[LuaSQL](https://keplerproject.github.io/luasql/)
 
-for use from command line
->**redis-lua**
->[nrk/redis-lua](https://github.com/nrk/redis-lua)
->
-
+*for mysql just simple install linux package lua-sql-mysql*
+ 
 ## Directory structure <a name="dir_struct"></a>
 ~~~
 lua-pump-redis
-├── src
-│   ├── dtcoll.lua
-│   ├── dtcommon.lua
-│   ├── dtree_redis.lua
-│   ├── dtutil_redis.lua
-│   ├── hlpfunc.lua
-│   ├── json.lua
-│   ├── redis_client.lua
-│   └── redis_client_cli.lua
-└── examples
-    ├── bikestore_data
-    │   └── # bikestore example files (json)
-    ├── bikestore_loader.lua
+├── examples
+│   ├── bikestore_json
+│   │   ├── SQL-Server-Sample-Database.png
+│   │   ├── brands.json
+│   │   ├── categories.json
+│   │   ├── customers.json
+│   │   ├── model.lua
+│   │   ├── order_items.json
+│   │   ├── orders.json
+│   │   ├── products.json
+│   │   ├── staffs.json
+│   │   ├── stocks.json
+│   │   └── stores.json
+|   ├── sql_create_scripts
+│   |   ├── bikestore.sql
+│   |   └── chinook.sql
+│   ├── add_index.lua
+│   ├── json_loader.lua
+│   ├── mysql_loader.lua
+│   ├── ora_loader.lua
+│   └── redis_info.lua
+└── src
+    ├── frommysql.lua
+    ├── fromora.lua
+    ├── json.lua
     └── toredis.lua
 ~~~
 
