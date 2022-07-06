@@ -147,24 +147,26 @@ function m.loadMySqlModel(ct, model, callBackFunc)
 	local psize=ct.blocksize
 	local abort
 	for _,dt in pairs(model) do
-		io.stderr:write(string.format("%s ",dt.name))
-		for i=0,t_info[dt.name],psize do
-			res = m.query(string.format("SELECT * FROM %s limit %d,%d",dt.tablename,i,i+psize), dt.tablename)
-			if not res then
-				abort = true
-				break
-			else
-				tor.loadObjects(res,dt,ct.dataonly)
+		local size = t_info[dt.name]
+		if size then
+			io.stderr:write(string.format("%s - %d\n",dt.name, size))
+			for i=0,size,psize do
+				res = m.query(string.format("SELECT * FROM %s limit %d,%d",dt.tablename,i,i+psize), dt.tablename)
+				if not res then
+					abort = true
+					break
+				else
+					tor.loadObjects(res,dt,ct.dataonly)
+				end
+				res = nil
+				collectgarbage("collect")
 			end
-			res = nil
-			collectgarbage("collect")
+			if abort then
+				break
+			end
+			desc[dt.name] = dt.index
+			base[dt.name] = t_info[dt.name] 
 		end
-		if abort then
-			break
-		end
-		io.stderr:write(string.format("records: %d\n",t_info[dt.name]))
-		desc[dt.name] = dt.index
-		base[dt.name] = t_info[dt.name] 
 	end
 	tor.getClient():set("base", json.encode(base))
 	tor.getClient():set("desc", json.encode(desc))
