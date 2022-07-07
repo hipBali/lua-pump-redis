@@ -62,6 +62,14 @@ function m.query(sql, table_name)
 	return t
 end
 
+function mySqlTypeUndefined(colType, colName)
+	local x = colType:match("(%d+)")
+	if x:len() < 3 then -- it is possibly not a number
+		return "number"
+	end
+	return colType
+end
+
 function m.getColTypes(table_name)
 	cur = assert (con:execute(string.format("SELECT * FROM %s LIMIT 1", table_name)))
 	local colts = cur:getcoltypes()
@@ -70,6 +78,9 @@ function m.getColTypes(table_name)
 	colTypes[table_name] = {}
 	for k,v in pairs(colts) do
 	  local ft = v
+	  if ft:find("undefined") then
+		ft = mySqlTypeUndefined(colts[k], colns[k])
+	  end
 	  if ft:find("number") then
 		ft = tonumber
 	  else
@@ -144,7 +155,7 @@ function m.loadMySqlModel(ct, model, callBackFunc)
 		t_info[v.name:upper()] = tonumber(v.size)
 	end
 
-	local psize=ct.blocksize
+	local psize=ct.blocksize or 1024*1024
 	local abort
 	for _,dt in pairs(model) do
 		local size = t_info[dt.name]
