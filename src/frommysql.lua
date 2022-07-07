@@ -111,13 +111,14 @@ end
 function m.getMySQLInfo(ct)
 	proc_ct(ct)
 	m.connect(ct)
-	res = m.s_query("SHOW TABLES")
+	local res = m.s_query("SHOW TABLES")
 	local tables = {}
 	for _,row in pairs(res) do 
 		for _,tname in pairs(row) do
 			if includes and includes[tname:upper()]==nil then break end
 			if excludes and excludes[tname:upper()] then break end
-			table.insert(tables,{name=tname:upper(), tablename=tname, index={}})
+			local res2 = m.s_query(string.format("SELECT COUNT(*) count FROM %s",tname))
+			table.insert(tables,{name=tname:upper(), tablename=tname, size=tonumber(res2[1].count), index={}})
 			local tid = #tables
 			m.getColTypes(tname)
 			if not ct.dataonly then
@@ -147,18 +148,11 @@ function m.loadMySqlModel(ct, model, callBackFunc)
 	m.connect(ct)
 	local desc = {}
 	local base = {}
-	local res = m.s_query(string.format(
-		"SELECT table_name AS name, table_rows AS size FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s'", ct.database))
-	
-	local t_info = {}
-	for k,v in pairs(res) do
-		t_info[v.name:upper()] = tonumber(v.size)
-	end
 
 	local psize=ct.blocksize or 1024*1024
 	local abort
 	for _,dt in pairs(model) do
-		local size = t_info[dt.name]
+		local size = dt.size
 		if size then
 			io.stderr:write(string.format("%s - %d\n",dt.name, size))
 			for i=0,size,psize do
@@ -176,7 +170,7 @@ function m.loadMySqlModel(ct, model, callBackFunc)
 				break
 			end
 			desc[dt.name] = dt.index
-			base[dt.name] = t_info[dt.name] 
+			base[dt.name] = dt.size
 		end
 	end
 	tor.getClient():set("base", json.encode(base))
